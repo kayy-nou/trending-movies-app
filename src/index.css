@@ -162,3 +162,7 @@
     display: none;
   }
 }
+
+.scroll-anchor {
+  scroll-margin-top: 80px; /* Match your header height */
+}

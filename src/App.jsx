@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-empty */
+
 import React, { useEffect,useRef,useState } from 'react'
 import Search from './components/Search'
 import MovieCard from './components/MovieCard';
@@ -17,7 +18,6 @@ const API_OPTIONS = {
   }
 }
 
-
 const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -27,7 +27,7 @@ const App = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const scrollRef = useRef();
   
-  useDebounce(()=> setDebounceSearchTerms(searchTerm), 1500, [searchTerm])
+  useDebounce(()=> setDebounceSearchTerms(searchTerm), 800, [searchTerm])
   
   const fetchMovies = async (query = '') => {
     setIsLoading(true);
@@ -85,12 +85,10 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (searchTerm && movieList.length > 0) {
-      scrollRef.current?.scrollIntoView({
-        behavior: 'smooth'
-      });
+    if (!isLoading && searchTerm && movieList.length > 0) {
+      scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, [movieList]);
+  }, [isLoading]);
 
   return (
     <main>
@@ -113,7 +111,7 @@ const App = () => {
             </ul>
           </section>
         )}
-        <div ref={scrollRef}/>
+        <div ref={scrollRef} className='scroll-anchor'/>
         <section className='all-movies'>
           {searchTerm? (
             <h2>Results</h2>) : (<h2>All Movies</h2>
