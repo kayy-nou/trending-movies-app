@@ -7,6 +7,9 @@ import Search from './components/Search'
 import MovieCard from './components/MovieCard';
 import { useDebounce } from 'react-use';
 import { getTrendingMovies, updateSearchCount } from './appwrite';
+import MoviecardShimmer from './components/MoviecardShimmer';
+import TrendingMoviesShimmer from './components/TrendingMoviesShimmer';
+
 
 const API_BASE_URL = 'https://api.themoviedb.org/3'
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -25,7 +28,9 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [debounceSearchTerms, setDebounceSearchTerms] = useState('');
   const [trendingMovies, setTrendingMovies] = useState([]);
+  const [isTrendingLoading, setIsTrendingLoading] = useState(true);
   const scrollRef = useRef();
+
   
   useDebounce(()=> setDebounceSearchTerms(searchTerm), 800, [searchTerm])
   
@@ -56,7 +61,12 @@ const App = () => {
 
       if(query && data.results.length > 0) {
         await updateSearchCount(query, data.results[0]);
+      } 
+
+      if(data.results == 0) {
+        setErrorMessage('Movie not found. Please enter the correct movie title ');
       }
+
     } catch (error) {
       console.log(error);
       setErrorMessage('Error fetching movies. Please try again later');
@@ -65,16 +75,18 @@ const App = () => {
     }
   } 
 
-  const loadTrendingMovies = async ()=> {
+  const loadTrendingMovies = async () => {
+    setIsTrendingLoading(true);
     try {
       const movies = await getTrendingMovies();
       console.log("Trending Movies:", movies);
-
-      setTrendingMovies(movies);
+      setTrendingMovies(movies || []);
     } catch (error) {
-      console.error(`Error fetching trending movies : ${error}`);
+      console.error(`Error fetching trending movies: ${error}`);
+    } finally {
+      setIsTrendingLoading(false);
     }
-  }
+  };
 
   useEffect(()=> {
     fetchMovies(debounceSearchTerms);
@@ -99,15 +111,23 @@ const App = () => {
         <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
         {trendingMovies.length > 0 && (
-          <section className='trending'>
+          <section className="trending">
             <h2>Trending Movies</h2>
             <ul>
-              {trendingMovies.map((movie, index) =>(
-                <li key={movie.$id}>
-                  <p>{index+1}</p>
-                  <img src={movie.poster_url} alt={movie.title} />
-                </li>
-              ))}
+            {isTrendingLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+              <TrendingMoviesShimmer key={i} />
+              ))
+             ) : trendingMovies.length > 0 ? (
+              trendingMovies.map((movie, index) => (
+              <li key={movie.$id}>
+              <p>{index + 1}</p>
+              <img src={movie.poster_url} alt={movie.title} />
+              </li>
+             ))
+            ) : (
+            <li>No trending movies available.</li>
+            )}
             </ul>
           </section>
         )}
@@ -117,7 +137,11 @@ const App = () => {
             <h2>Results</h2>) : (<h2>All Movies</h2>
           )}
           {isLoading? (
-            <p className='text-white'>Loading...</p>
+            <ul>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <MoviecardShimmer key={i} />
+            ))}
+            </ul>
           ): errorMessage ? (
             <p className='text-red-500'>{errorMessage}</p>
           ): (

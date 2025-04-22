@@ -13,7 +13,7 @@ const MovieCard = ({movie :
             alt={title} 
         />
         <div>
-            <h3>{title}</h3>
+            <h3 className='mt-3'>{title}</h3>
             <div className='content'>
                 <div className='rating'>
                     <img src={starIcon} alt="Star Icon" />
