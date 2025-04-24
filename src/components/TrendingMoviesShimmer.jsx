@@ -2,9 +2,7 @@ import React from 'react'
 
 const TrendingMoviesShimmer = () => {
   return (
-    <div className='trending'>
-      <div className='min-h-[307px] max-h-[307px] object-cover animate-pulse bg-gray-700 rounded w-[230px] max-[230px]'></div>
-    </div>
+      <div className='shimmer-trending mt-5 min-h-[192px] max-h-[192px] object-cover animate-pulse bg-gray-700 rounded-lg w-[130px] max-[130px]'></div>
   )
 }
 

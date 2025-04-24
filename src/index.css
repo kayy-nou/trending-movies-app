@@ -79,6 +79,10 @@
     }
   }
 
+  .shimmer-trending {
+    @apply w-[127px] h-[192px] rounded-lg object-cover -ml-3.5;
+  }
+
   .search {
     @apply w-full bg-light-100/5 px-4 py-3 rounded-lg mt-10 max-w-3xl mx-auto;
 

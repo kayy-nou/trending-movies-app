@@ -9,7 +9,7 @@ import { useDebounce } from 'react-use';
 import { getTrendingMovies, updateSearchCount } from './appwrite';
 import MoviecardShimmer from './components/MoviecardShimmer';
 import TrendingMoviesShimmer from './components/TrendingMoviesShimmer';
-
+import NotFoundAnimation from './components/NotFoundAnimation';
 
 const API_BASE_URL = 'https://api.themoviedb.org/3'
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -30,7 +30,8 @@ const App = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [isTrendingLoading, setIsTrendingLoading] = useState(true);
   const scrollRef = useRef();
-
+  const [notFoundMovie, setNotFoundMovie] = useState(false);
+  const isFirstRender = useRef(true);
   
   useDebounce(()=> setDebounceSearchTerms(searchTerm), 800, [searchTerm])
   
@@ -64,7 +65,8 @@ const App = () => {
       } 
 
       if(data.results == 0) {
-        setErrorMessage('Movie not found. Please enter the correct movie title ');
+        setNotFoundMovie(true);
+        setErrorMessage('Movie not found. Please try another movies');
       }
 
     } catch (error) {
@@ -97,10 +99,14 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (!isLoading && searchTerm && movieList.length > 0) {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (!isLoading && debounceSearchTerms) {
       scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, [isLoading]);
+  }, [isLoading, debounceSearchTerms]);
 
   return (
     <main>
@@ -115,18 +121,24 @@ const App = () => {
             <h2>Trending Movies</h2>
             <ul>
             {isTrendingLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-              <TrendingMoviesShimmer key={i} />
-              ))
+               <>
+               {trendingMovies.map((movie, index) => (
+                 <li key={movie.$id}>
+                 <p>{index + 1}</p>
+                 {Array.from({ length: 1 }).map((_, i) => (
+                 <TrendingMoviesShimmer key={i} />
+                 ))}
+                 </li>
+               ))}
+             </>
              ) : trendingMovies.length > 0 ? (
               trendingMovies.map((movie, index) => (
               <li key={movie.$id}>
               <p>{index + 1}</p>
               <img src={movie.poster_url} alt={movie.title} />
-              </li>
-             ))
-            ) : (
-            <li>No trending movies available.</li>
+              </li> ))
+            ) : ( 
+            null
             )}
             </ul>
           </section>
@@ -143,7 +155,11 @@ const App = () => {
             ))}
             </ul>
           ): errorMessage ? (
-            <p className='text-red-500'>{errorMessage}</p>
+            <>
+            <div ref={scrollRef} className='scroll-anchor'/>
+            <NotFoundAnimation/>
+            <p className='text-red-500 text-center '>{errorMessage}</p>
+            </>
           ): (
             <ul>
               {movieList.map((movie) =>(
