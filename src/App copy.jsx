@@ -6,7 +6,7 @@ import { getTrendingMovies, updateSearchCount } from './appwrite';
 import MoviecardShimmer from './components/MoviecardShimmer';
 import TrendingMoviesShimmer from './components/TrendingMoviesShimmer';
 import NotFoundAnimation from './components/NotFoundAnimation';
-import ModalPopUp from './components/ModalPopUp';
+import ModalPopUp from './components/modal/ModalPopUp'; // Import your Modal
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -27,9 +27,9 @@ const App = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [isTrendingLoading, setIsTrendingLoading] = useState(true);
   const scrollRef = useRef();
-  // eslint-disable-next-line no-unused-vars
   const [notFoundMovie, setNotFoundMovie] = useState(false);
   const isFirstRender = useRef(true);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
 
@@ -107,7 +107,6 @@ const App = () => {
   const openModal = (movie) => {
     setSelectedMovie(movie);
     setIsModalOpen(true);
-    console.log(movie);
   };
 
   const closeModal = () => {
@@ -126,6 +125,7 @@ const App = () => {
           </h1>
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
+
         {trendingMovies.length > 0 && (
           <section className="trending">
             <h2>Trending Movies</h2>
@@ -148,10 +148,12 @@ const App = () => {
             </ul>
           </section>
         )}
+
         <div ref={scrollRef} className="scroll-anchor" />
 
         <section className="all-movies">
           {searchTerm ? <h2>Results</h2> : <h2>All Movies</h2>}
+
           {isLoading ? (
             <ul>
               {Array.from({ length: 8 }).map((_, i) => (
@@ -171,10 +173,12 @@ const App = () => {
               ))}
             </ul>
           )}
-          {isModalOpen && selectedMovie && (
-            <ModalPopUp movie={selectedMovie} closeModal={closeModal} />
-          )}
         </section>
+
+        {/* Show Modal if open */}
+        {isModalOpen && selectedMovie && (
+          <ModalPopUp movie={selectedMovie} closeModal={closeModal} />
+        )}
       </div>
     </main>
   );
