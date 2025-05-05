@@ -15,8 +15,8 @@ const ModalPopUp = ({ movie, closeModal }) => {
   
     return (
         <main>
-        <div className='modal-bg'>
-                <div className='movie-card space-y-7.5'>
+        <div className='modal-card'>
+                <div className='space-y-7.5'>
                     <div className='text-white space-y-7.5'>
                         <div className='flex justify-between'>
                             <h2 className='flex-none '>{title}</h2>

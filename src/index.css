@@ -150,6 +150,51 @@
       @apply text-gray-100 font-medium text-base;
     }
   }
+
+  .modal-card {
+    @apply bg-dark-100 p-5 rounded-2xl shadow-inner shadow-light-100/10 cursor-pointer;
+
+    & img {
+      @apply rounded-lg h-auto w-full;
+    }
+
+    & iframe {
+      @apply rounded-lg w-full;
+    }
+
+    & h3 {
+      @apply text-white font-bold text-base line-clamp-1;
+    }
+
+    & .content {
+      @apply mt-2 flex flex-row items-center flex-wrap gap-2;
+    }
+
+    & .rating {
+      @apply flex flex-row items-center gap-1;
+    }
+
+    & .rating img {
+      @apply size-4 object-contain;
+    }
+
+    & .rating p {
+      @apply font-bold text-base text-white;
+    }
+
+    & .content span {
+      @apply text-sm text-gray-100;
+    }
+
+    & .content .lang {
+      @apply capitalize text-gray-100 font-medium text-base;
+    }
+
+    & .content .year {
+      @apply text-gray-100 font-medium text-base;
+    }
+
+  }
 }
 
 @utility text-gradient {
@@ -173,4 +218,19 @@
 
 .scroll-anchor {
   scroll-margin-top: 80px; /* Match your header height */
+}
+
+
+.modal-bg {
+  @apply  mx-auto flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

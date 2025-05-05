@@ -172,7 +172,9 @@ const App = () => {
             </ul>
           )}
           {isModalOpen && selectedMovie && (
-            <ModalPopUp movie={selectedMovie} closeModal={closeModal} />
+            <div className='modal-bg'>
+              <ModalPopUp movie={selectedMovie} closeModal={closeModal} />
+            </div>
           )}
         </section>
       </div>
