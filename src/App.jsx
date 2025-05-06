@@ -167,12 +167,15 @@ const App = () => {
           ) : (
             <ul>
               {movieList.map((movie) => (
-                <MovieCard key={movie.id} movie={movie} onClick={() => openModal(movie)} />
+                <MovieCard 
+                key={movie.id} 
+                movie={movie} 
+                onClick={() => openModal(movie)} />
               ))}
             </ul>
           )}
           {isModalOpen && selectedMovie && (
-            <div className='modal-bg'>
+            <div className='modal-overlay w-max-12/12' onClick={closeModal}>
               <ModalPopUp movie={selectedMovie} closeModal={closeModal} />
             </div>
           )}

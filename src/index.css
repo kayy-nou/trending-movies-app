@@ -152,7 +152,7 @@
   }
 
   .modal-card {
-    @apply bg-dark-100 p-5 rounded-2xl shadow-inner shadow-light-100/10 cursor-pointer;
+    @apply bg-dark-100 p-12.5 rounded-2xl shadow-inner shadow-light-100/10;
 
     & img {
       @apply rounded-lg h-auto w-full;
@@ -217,11 +217,10 @@
 }
 
 .scroll-anchor {
-  scroll-margin-top: 80px; /* Match your header height */
+  scroll-margin-top: 80px; 
 }
 
-
-.modal-bg {
+.modal-overlay {
   @apply  mx-auto flex;
   position: absolute;
   top: 0;

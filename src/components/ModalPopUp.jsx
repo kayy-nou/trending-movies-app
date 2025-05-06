@@ -6,7 +6,7 @@ import arrow from '../assets/arrow.png'
 
 
 const ModalPopUp = ({ movie, closeModal }) => {
-  const { title, release_date, poster_path, overview, vote_average, vote_count } = movie;
+  const { title, release_date, poster_path, overview, vote_average, vote_count, genre_ids } = movie;
   const formatNumber = (num) => {
     if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
     if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
@@ -14,9 +14,8 @@ const ModalPopUp = ({ movie, closeModal }) => {
   };
   
     return (
-        <main>
-        <div className='modal-card'>
-                <div className='space-y-7.5'>
+        <div className='modal-card min-w-10/12 max-w-10/12 ' onClick={(e) => e.stopPropagation()}>
+             <div className='space-y-7.5'>
                     <div className='text-white space-y-7.5'>
                         <div className='flex justify-between'>
                             <h2 className='flex-none '>{title}</h2>
@@ -64,18 +63,18 @@ const ModalPopUp = ({ movie, closeModal }) => {
                                 </div>
                                 <div className="content-button w-2/9 flex justify-end run">
                                     <button onClick={closeModal}  className='flex items-center font-semibold'>
-                                        <p className='w-[186px] h-[44px] bg-linear-to-r from-[#D6C7FF] to-[#AB8BFF] text-[#121212] flex items-center justify-center rounded-lg p-[6px]'>Visit Home Page 
+                                        <p className='w-[186px] h-[44px] bg-linear-to-r from-[#D6C7FF] to-[#AB8BFF] text-[#121212] flex items-center justify-center rounded-lg p-[6px] cursor-pointer'>Visit Home Page 
                                             <span className='ml-1'><img src={arrow}/></span></p>
                                     </button>
                                 </div>
                             </div>
                             <div className='flex'>
                                 <p className='w-1/9'>Overview</p>
-                                <p className='w-7/12 text-white'>Hundreds of cash-strapped players accept a strange invitation to compete in children's games. Inside, a tempting prize awaits with deadly high stakes: a survival game that has a whopping 45.6 billion-won prize at stake.</p>
+                            <p className='w-7/12 text-white'>{overview}</p>
                             </div>
                             <div className='flex'>
                                 <p className='w-1/9'>Release date</p>
-                                <p className='w-7/12 text-[#D6C7FF]'>December 26, 2024 (Worldwide)</p>
+                                <p className='w-7/12 text-[#D6C7FF]'>{release_date} (Worldwide)</p>
                             </div>
                             <div className='flex'>
                                 <p className='w-1/9'>Countries</p>
@@ -107,9 +106,8 @@ const ModalPopUp = ({ movie, closeModal }) => {
                             </div>
                         </div>
                     </section>
-                </div>
+             </div>
         </div>
-        </main>
     )
 }
 
