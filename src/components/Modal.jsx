@@ -46,7 +46,7 @@ const ModalPopUp = ({ movie, closeModal }) => {
                         />
                         <div className='w-8/12 '>
                             <iframe src="https://www.youtube.com/embed/Dfigw0IMl-c" 
-                                    frameborder="0"
+                                    frameBorder="0"
                                     allowFullScreen
                                     width='100%' height='100%'>
                             </iframe>

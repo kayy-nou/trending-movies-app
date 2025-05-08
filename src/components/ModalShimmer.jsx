@@ -1,5 +1,39 @@
 import React from 'react'
 
+const API_BASE_URL = 'https://api.themoviedb.org/3/movie';
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const API_OPTIONS = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json',
+    Authorization: `Bearer ${API_KEY}`,
+  },
+};
+
+const fetchMovies = async (query = '') => {
+    setIsLoading(true);
+    try {
+        const endpoint = query
+        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+        : `${API_BASE_URL}/movie/{movie_id}`;
+    
+        const response = await fetch(endpoint, API_OPTIONS);
+        if (!response.ok) {
+        throw new Error('Failed to fetch movies');
+        }
+        const data = await response.json();
+    
+        if (data.Response === 'false') {
+        return { error: data.Error || 'Failed to fetch movies' };
+        }
+    
+        return { movies: data.results || [] };
+    } catch (error) {
+        return { error: error.message };
+    }
+}
+
+
 const ModalShimmer = () => {
   return (
     <div className='mb-auto modal-card min-w-8/12 max-w-8/12' onClick={(e) => e.stopPropagation()}>

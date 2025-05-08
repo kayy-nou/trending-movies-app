@@ -114,8 +114,24 @@ const App = () => {
       setSelectedMovie(movie); 
       setIsLoading(false); 
     }, 800); 
-  };
 
+    try {
+      const endpoint = movie
+        ? `${API_BASE_URL}/movie/${movie.id}?api_key=${API_KEY}`
+        : null
+
+      const response = await fetch(endpoint, API_OPTIONS);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch movies');
+      }
+      const data = await response.json();
+      console.log(data);
+      
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const closeModal = () => {
     setIsModalOpen(false);
