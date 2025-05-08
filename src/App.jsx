@@ -6,7 +6,8 @@ import { getTrendingMovies, updateSearchCount } from './appwrite';
 import MoviecardShimmer from './components/MoviecardShimmer';
 import TrendingMoviesShimmer from './components/TrendingMoviesShimmer';
 import NotFoundAnimation from './components/NotFoundAnimation';
-import ModalPopUp from './components/ModalPopUp';
+import Modal from './components/Modal';
+import ModalShimmer from './components/ModalShimmer';
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -104,11 +105,17 @@ const App = () => {
     }
   }, [isLoading, debounceSearchTerms]);
 
-  const openModal = (movie) => {
-    setSelectedMovie(movie);
-    setIsModalOpen(true);
-    console.log(movie);
+  const openModal = async (movie) => {
+    setIsLoading(true); 
+    setIsModalOpen(true); 
+    setSelectedMovie(null); 
+
+    setTimeout(() => {
+      setSelectedMovie(movie); 
+      setIsLoading(false); 
+    }, 800); 
   };
+
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -116,9 +123,11 @@ const App = () => {
   };
 
   return (
-    <main>
+    <main className='relative'>
       <div className="pattern" />
+
       <div className="wrapper">
+
         <header>
           <img src="../src/assets/hero.png" alt="Hero Banner" />
           <h1>
@@ -126,28 +135,30 @@ const App = () => {
           </h1>
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
+
         {trendingMovies.length > 0 && (
-          <section className="trending">
-            <h2>Trending Movies</h2>
-            <ul>
-              {isTrendingLoading ? (
-                trendingMovies.map((movie, index) => (
-                  <li key={movie.$id}>
-                    <p>{index + 1}</p>
-                    <TrendingMoviesShimmer />
-                  </li>
-                ))
-              ) : (
-                trendingMovies.map((movie, index) => (
-                  <li key={movie.$id}>
-                    <p>{index + 1}</p>
-                    <img src={movie.poster_url} alt={movie.title} />
-                  </li>
-                ))
-              )}
-            </ul>
-          </section>
+        <section className="trending">
+          <h2>Trending Movies</h2>
+          <ul>
+            {isTrendingLoading ? (
+              trendingMovies.map((movie, index) => (
+                <li key={movie.$id}>
+                  <p>{index + 1}</p>
+                  <TrendingMoviesShimmer />
+                </li>
+              ))
+            ) : (
+              trendingMovies.map((movie, index) => (
+                <li key={movie.$id}>
+                  <p>{index + 1}</p>
+                  <img src={movie.poster_url} alt={movie.title} />
+                </li>
+              ))
+            )}
+          </ul>
+        </section>
         )}
+
         <div ref={scrollRef} className="scroll-anchor" />
 
         <section className="all-movies">
@@ -173,14 +184,23 @@ const App = () => {
                 onClick={() => openModal(movie)} />
               ))}
             </ul>
-          )}
-          {isModalOpen && selectedMovie && (
-            <div className='modal-overlay w-max-12/12' onClick={closeModal}>
-              <ModalPopUp movie={selectedMovie} closeModal={closeModal} />
-            </div>
-          )}
+          )}            
         </section>
+        
+        {isModalOpen && (
+          <div
+            className='fixed left-0 right-0 top-0 z-[1055] max-w-12/12 h-full modal-overlay overflow-auto'
+            onClick={closeModal}
+          >
+            {isLoading ? (
+              <ModalShimmer />
+            ) : selectedMovie ? (
+              <Modal movie={selectedMovie} closeModal={closeModal} />
+            ) : null}
+          </div>
+        )}
       </div>
+     
     </main>
   );
 };
