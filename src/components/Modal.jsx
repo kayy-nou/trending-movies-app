@@ -5,12 +5,22 @@ import upTrendIcon from '../assets/up-trend.png'
 import arrow from '../assets/arrow.png'
 
 
-const ModalPopUp = ({ movie, closeModal }) => {
-  const { title, release_date, poster_path, overview, vote_average, vote_count, genre_ids } = movie;
+const Modal = ({movie, videos}) => {
+  const { 
+    title, release_date, poster_path, overview, vote_average, vote_count, runtime, homepage, budget, revenue, tagline, production_companies, production_countries, genres, spoken_languages, status, popularity
+   } = movie;
+  
   const formatNumber = (num) => {
-    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + ' Billion';
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + ' Million';
     if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
     return num;
+  };
+  
+  const formatRuntime = (minutes) => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours}h ${mins}m`;
   };
   
     return (
@@ -27,7 +37,7 @@ const ModalPopUp = ({ movie, closeModal }) => {
                                         <span className='font-normal text-[#A8B5DB]'>({formatNumber(vote_count)})</span></p>
                                 </div>
                                 <p className=' px-4 py-1.75 font-semibold h-[44px] bg-[#221F3D] text-[#A8B5DB] flex items-center justify-center rounded-lg p-[6px]'>
-                                    <span className='flex items-center mr-1 w-[24px] h-[24px]'><img src={upTrendIcon}/></span>1</p>                                    
+                                    <span className='flex items-center mr-1 w-[24px] h-[24px]'><img src={upTrendIcon}/></span>{popularity.toFixed(0)}</p>                                    
                             </div> 
                         </div>
                         <div className='content flex text-[#A8B5DB] '>
@@ -35,7 +45,7 @@ const ModalPopUp = ({ movie, closeModal }) => {
                             <span>•</span>
                             <p>PG-13</p>
                             <span>•</span>
-                            <p>Duration</p>
+                            <p>{runtime? formatRuntime(runtime): 'N/A'}</p>
                         </div>  
                     </div>
                     <div className='modal-image flex space-x-6.5'>
@@ -45,25 +55,29 @@ const ModalPopUp = ({ movie, closeModal }) => {
                             alt={title}
                         />
                         <div className='w-8/12 '>
-                            <iframe src="https://www.youtube.com/embed/Dfigw0IMl-c" 
+                            {videos.length > 0 &&
+                            <iframe 
+                                    src={`https://www.youtube.com/embed/${videos[0].key}`}
                                     frameBorder="0"
                                     allowFullScreen
                                     width='100%' height='100%'>
                             </iframe>
-                        </div>
+                            }
+                        </div> 
                     </div>
                     <section className='modal-content flex justify-between'>
                         <div className='modal-detail text-[#A8B5DB] space-y-5 font-normal '>
                             <div className='flex'>                        
                                 <p className='w-2/12'>Genre</p>
                                 <div className='flex justify-start w-7/12 space-x-2.25 '>
-                                    <p className='px-4.5 py-1 font-semibold h-[35px] bg-[#221F3D] text-[#FFFFFF] flex items-center justify-center rounded-lg'>Action</p>
-                                    <p className='px-4.5 py-1 font-semibold h-[35px] bg-[#221F3D] text-[#FFFFFF] flex items-center justify-center rounded-lg '>Adventure</p>
-                                    <p className='px-4.5 py-1 font-semibold h-[35px] bg-[#221F3D] text-[#FFFFFF] flex items-center justify-center rounded-lg'>Drama</p>
+                                    {genres.map((genre, index) => (
+                                        <p key={index} className='px-4.5 py-1 font-semibold h-[35px] bg-[#221F3D] text-[#FFFFFF] flex items-center justify-center rounded-lg'>{genre.name}</p>
+                                    ))}
                                 </div>
                                 <div className="content-button w-3/12 flex justify-end run">
-                                    <button onClick={closeModal}  className='flex items-center font-semibold'>
-                                        <p className='w-[186px] h-[44px] bg-linear-to-r from-[#D6C7FF] to-[#AB8BFF] text-[#121212] flex items-center justify-center rounded-lg p-[6px] cursor-pointer'>Visit Home Page 
+                                    <button onClick={()=> window.open(homepage)}  
+                                            className='flex items-center font-semibold'>
+                                            <p className='w-[186px] h-[44px] bg-linear-to-r from-[#D6C7FF] to-[#AB8BFF] text-[#121212] flex items-center justify-center rounded-lg p-[6px] cursor-pointer'>Visit Home Page 
                                             <span className='ml-1'><img src={arrow}/></span></p>
                                     </button>
                                 </div>
@@ -74,35 +88,56 @@ const ModalPopUp = ({ movie, closeModal }) => {
                             </div>
                             <div className='flex'>
                                 <p className='w-2/12'>Release date</p>
-                                <p className='w-7/12 text-[#D6C7FF]'>{release_date} (Worldwide)</p>
+                                <p className='w-7/12 text-[#D6C7FF]'>{release_date}</p>
                             </div>
                             <div className='flex'>
                                 <p className='w-2/12'>Countries</p>
-                                <p className='w-7/12 text-[#D6C7FF]'>United Stated <span>•</span> Canada <span>•</span> UAE <span>•</span> Hungary <span>•</span> Italy <span>•</span> New Zealand</p>
+                                <p className="w-7/12 text-[#D6C7FF]">
+                                    {production_countries.map((country, index) => (
+                                        <span key={index}>
+                                        {country.name}
+                                        {index < production_countries.length - 1 && ' • '}
+                                        </span>
+                                    ))}
+                                </p>
                             </div>
                             <div className='flex'>
                                 <p className='w-2/12'>Status</p>
-                                <p className='w-7/12 text-[#D6C7FF]'>Released</p>
+                                <p className='w-7/12 text-[#D6C7FF]'>{status}</p>
                             </div>
                             <div className='flex'>
                                 <p className='w-2/12'>Language</p>
-                                <p className='w-7/12 text-[#D6C7FF]'>English <span>•</span> Korean <span>•</span> Hindi <span>•</span> Arabic <span>•</span> German <span>•</span> Spanish</p>
+                                <p className='w-7/12 text-[#D6C7FF]'>
+                                    {spoken_languages.map((language, index) => (
+                                        <span key={index}>
+                                        {language.english_name}
+                                        {index < spoken_languages.length - 1 && ' • '}
+                                        </span>
+                                    ))} 
+                                </p>
                             </div>
                             <div className='flex'>
                                 <p className='w-2/12'>Budget</p>
-                                <p className='w-7/12 text-[#D6C7FF]'>$21.4 million</p>
+                                <p className='w-7/12 text-[#D6C7FF]'>{budget? '$'+ (formatNumber(budget)): 'N/A'}</p>
                             </div>
                             <div className='flex'>
                                 <p className='w-2/12'>Revenue</p>
-                                <p className='w-7/12 text-[#D6C7FF]'>$900 Million</p>
+                                <p className='w-7/12 text-[#D6C7FF]'>{revenue? '$'+ (formatNumber(revenue)): 'N/A'}</p>
                             </div>
                             <div className='flex'>
                                 <p className='w-2/12'>Tagline</p>
-                                <p className='w-7/12 text-[#D6C7FF]'>45.6 Billion Won is Child's Play</p>
+                                <p className='w-7/12 text-[#D6C7FF]'>{tagline ? tagline : 'N/A'}</p>
                             </div>
                             <div className='flex'>
                                 <p className='w-2/12'>Production Companies</p>
-                                <p className='w-7/12 text-[#D6C7FF]'>Legendary Entertainment <span>•</span> Warner Bros <span>•</span> Entertainment <span>•</span> Villeneuve Films</p>
+                                <p className='w-7/12 text-[#D6C7FF]'>
+                                    {production_companies? production_companies.map((company, index) => (
+                                        <span key={index}>
+                                        {company.name}
+                                        {index < production_companies.length - 1 && ' • '}
+                                        </span> 
+                                    )) : 'N/A'}
+                                </p>
                             </div>
                         </div>
                     </section>
@@ -111,5 +146,5 @@ const ModalPopUp = ({ movie, closeModal }) => {
     )
 }
 
-export default ModalPopUp
+export default Modal
 

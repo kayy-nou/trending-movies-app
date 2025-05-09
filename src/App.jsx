@@ -33,6 +33,8 @@ const App = () => {
   const isFirstRender = useRef(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [videos, setVideos] = useState([]);
+
 
   useDebounce(() => setDebounceSearchTerms(searchTerm), 800, [searchTerm]);
 
@@ -109,11 +111,7 @@ const App = () => {
     setIsLoading(true); 
     setIsModalOpen(true); 
     setSelectedMovie(null); 
-
-    setTimeout(() => {
-      setSelectedMovie(movie); 
-      setIsLoading(false); 
-    }, 800); 
+    setVideos([]);
 
     try {
       const endpoint = movie
@@ -127,6 +125,24 @@ const App = () => {
       }
       const data = await response.json();
       console.log(data);
+
+      const videosEndpoint = movie
+        ? `${API_BASE_URL}/movie/${movie.id}/videos?api_key=${API_KEY}`
+        : null
+      
+      const videosResponse = await fetch(videosEndpoint, API_OPTIONS);
+      if (!videosResponse.ok) {
+        throw new Error('Failed to fetch videos');
+      }
+
+      const videosData = await videosResponse.json();
+      console.log(videosData);
+
+      setTimeout(() => {
+        setSelectedMovie(data); 
+        setVideos(videosData.results);
+        setIsLoading(false); 
+        }, 800); 
       
     } catch (error) {
       console.log(error);
@@ -211,7 +227,7 @@ const App = () => {
             {isLoading ? (
               <ModalShimmer />
             ) : selectedMovie ? (
-              <Modal movie={selectedMovie} closeModal={closeModal} />
+              <Modal movie={selectedMovie} closeModal={closeModal} videos={videos} />
             ) : null}
           </div>
         )}
