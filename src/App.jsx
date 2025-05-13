@@ -8,6 +8,7 @@ import TrendingMoviesShimmer from './components/TrendingMoviesShimmer';
 import NotFoundAnimation from './components/NotFoundAnimation';
 import Modal from './components/Modal';
 import ModalShimmer from './components/ModalShimmer';
+import Page from './components/Page';
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -34,6 +35,8 @@ const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [videos, setVideos] = useState([]);
+  const [selectedPage, setSelectedPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
 
   useDebounce(() => setDebounceSearchTerms(searchTerm), 800, [searchTerm]);
@@ -45,7 +48,7 @@ const App = () => {
     try {
       const endpoint = query
         ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
-        : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+        : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc&page=${selectedPage}`;
 
       const response = await fetch(endpoint, API_OPTIONS);
       if (!response.ok) {
@@ -60,6 +63,8 @@ const App = () => {
       }
 
       setMovieList(data.results || []);
+      setTotalPages(Math.min(data.total_pages, 500)); 
+      console.log(data);
 
       if (query && data.results.length > 0) {
         await updateSearchCount(query, data.results[0]);
@@ -91,7 +96,8 @@ const App = () => {
 
   useEffect(() => {
     fetchMovies(debounceSearchTerms);
-  }, [debounceSearchTerms]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPage, debounceSearchTerms]);
 
   useEffect(() => {
     loadTrendingMovies();
@@ -124,7 +130,6 @@ const App = () => {
         throw new Error('Failed to fetch movies');
       }
       const data = await response.json();
-      console.log(data);
 
       const videosEndpoint = movie
         ? `${API_BASE_URL}/movie/${movie.id}/videos?api_key=${API_KEY}`
@@ -136,7 +141,6 @@ const App = () => {
       }
 
       const videosData = await videosResponse.json();
-      console.log(videosData);
 
       setTimeout(() => {
         setSelectedMovie(data); 
@@ -153,6 +157,11 @@ const App = () => {
     setIsModalOpen(false);
     setSelectedMovie(null);
   };
+
+  const handlePageChange = (event, value) => {
+    setSelectedPage(value);
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   return (
     <main className='relative'>
@@ -216,7 +225,8 @@ const App = () => {
                 onClick={() => openModal(movie)} />
               ))}
             </ul>
-          )}            
+          )}
+          <Page handlePageChange={handlePageChange} totalPages={totalPages} />          
         </section>
         
         {isModalOpen && (
