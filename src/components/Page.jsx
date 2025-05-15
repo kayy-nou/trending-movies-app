@@ -2,12 +2,13 @@ import React from 'react'
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 
-const Page = ({handlePageChange, totalPages,}) => {
+const Page = ({handlePageChange, totalPages, selectedPage}) => {
 
   return (
     <Stack spacing={2}
     alignItems="center">  
       <Pagination 
+      page={selectedPage}
       onChange={handlePageChange}
       count={totalPages}
       showFirstButton showLastButton 

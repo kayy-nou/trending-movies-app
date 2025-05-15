@@ -47,7 +47,7 @@ const App = () => {
 
     try {
       const endpoint = query
-        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}&page=${selectedPage}`
         : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc&page=${selectedPage}`;
 
       const response = await fetch(endpoint, API_OPTIONS);
@@ -93,6 +93,10 @@ const App = () => {
       setIsTrendingLoading(false);
     }
   };
+
+  useEffect(() => {
+    setSelectedPage(1);
+  }, [debounceSearchTerms]);
 
   useEffect(() => {
     fetchMovies(debounceSearchTerms);
@@ -226,7 +230,7 @@ const App = () => {
               ))}
             </ul>
           )}
-          <Page handlePageChange={handlePageChange} totalPages={totalPages} />          
+          <Page handlePageChange={handlePageChange} totalPages={totalPages} selectedPage={selectedPage}  />          
         </section>
         
         {isModalOpen && (
